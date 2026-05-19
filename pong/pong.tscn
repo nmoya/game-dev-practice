@@ -3,20 +3,19 @@
 [ext_resource type="PackedScene" uid="uid://cv6r2wbfv4e8f" path="res://paddle.tscn" id="1_8w31r"]
 [ext_resource type="Script" uid="uid://b37eg3p5dq5xa" path="res://pong.gd" id="1_m5tya"]
 [ext_resource type="Script" uid="uid://cr54hg1hwpknt" path="res://ball.gd" id="2_4opyw"]
+[ext_resource type="Script" uid="uid://dose2pvathepf" path="res://score_hud.gd" id="4_m5tya"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_pkvn5"]
-radius = 35.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eipaa"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_m5tya"]
-radius = 35.0
-height = 70.0
+[sub_resource type="BoxMesh" id="BoxMesh_ludyb"]
+size = Vector3(20, 20, 1)
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_4opyw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m5tya"]
 size = Vector2(10, 1080)
 
-[node name="Pong" type="Node2D" unique_id=1439645104 node_paths=PackedStringArray("left_paddle", "right_paddle", "ball", "divider_line", "lower_wall", "left_goal", "right_goal")]
+[node name="Pong" type="Node2D" unique_id=1439645104 node_paths=PackedStringArray("left_paddle", "right_paddle", "ball", "divider_line", "lower_wall", "left_goal", "right_goal", "score_hud")]
 script = ExtResource("1_m5tya")
 left_paddle = NodePath("LeftPaddle")
 right_paddle = NodePath("RightPaddle")
@@ -25,6 +24,7 @@ divider_line = NodePath("DividerLine")
 lower_wall = NodePath("Boundaries/LowerWall")
 left_goal = NodePath("LeftGoal")
 right_goal = NodePath("RightGoal")
+score_hud = NodePath("UIRoot/ScoreHUD")
 
 [node name="LeftPaddle" parent="." unique_id=286122963 instance=ExtResource("1_8w31r")]
 position = Vector2(63, 501)
@@ -34,14 +34,16 @@ position = Vector2(1818, 521)
 player = "PlayerTwo"
 
 [node name="Ball" type="CharacterBody2D" parent="." unique_id=1509319206]
+position = Vector2(250, 109)
 collision_mask = 6
 script = ExtResource("2_4opyw")
+speed_ratio = 1.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ball" unique_id=716590435]
-shape = SubResource("CircleShape2D_pkvn5")
+shape = SubResource("RectangleShape2D_eipaa")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="Ball" unique_id=1262370282]
-mesh = SubResource("SphereMesh_m5tya")
+mesh = SubResource("BoxMesh_ludyb")
 
 [node name="Boundaries" type="StaticBody2D" parent="." unique_id=1361099202]
 collision_layer = 4
@@ -66,3 +68,36 @@ shape = SubResource("RectangleShape2D_m5tya")
 
 [node name="DividerLine" type="Line2D" parent="." unique_id=671363171]
 points = PackedVector2Array(0, 0, 0, 1080)
+width = 20.0
+
+[node name="UIRoot" type="CanvasLayer" parent="." unique_id=1564719419]
+
+[node name="ScoreHUD" type="HBoxContainer" parent="UIRoot" unique_id=888964137]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+script = ExtResource("4_m5tya")
+
+[node name="Control" type="Control" parent="UIRoot/ScoreHUD" unique_id=1686461677]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LeftScore" type="Label" parent="UIRoot/ScoreHUD" unique_id=698410869]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0"
+
+[node name="Control2" type="Control" parent="UIRoot/ScoreHUD" unique_id=1836515787]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightScore" type="Label" parent="UIRoot/ScoreHUD" unique_id=940955965]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0"

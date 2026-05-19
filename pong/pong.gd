@@ -7,6 +7,7 @@ extends Node2D
 @export var lower_wall: CollisionShape2D
 @export var left_goal: Area2D
 @export var right_goal: Area2D
+@export var score_hud: ScoreHUD
 @export var paddle_speed_ratio: float = 1.4
 
 var left_score: int = 0
@@ -15,23 +16,26 @@ var right_score: int = 0
 enum GameState {
 	READY,
 	PLAYING,
-	POINT_SCORED
+	POINT_SCORED,
+	RESTART
 }
 
 var state: GameState = GameState.READY
 func _ready():
 	update_layout(get_viewport_rect().size)
 	set_state(GameState.READY)
-	left_goal.body_entered.connect(on_left_goal_collision)
-	right_goal.body_entered.connect(on_right_goal_collision)
+	left_goal.body_entered.connect(on_goal.bind("left"))
+	right_goal.body_entered.connect(on_goal.bind("right"))
 	
-func on_left_goal_collision(body: Ball):
-	if state == GameState.PLAYING:
-		print("Left goal")
-	
-func on_right_goal_collision(body: Ball):
-	if state == GameState.PLAYING:
-		print("Right goal")
+func on_goal(_body: Ball, side: String,):
+	if state != GameState.PLAYING:
+		return
+	if side == "left":
+		right_score += 1
+	else:
+		left_score += 1
+	score_hud.set_score(left_score, right_score)
+	set_state(GameState.POINT_SCORED)
 
 func update_layout(screen_size: Vector2) -> void:
 	var half_y = screen_size.y / 2
@@ -54,17 +58,22 @@ func _process(delta) -> void:
 	if state == GameState.READY and Input.is_action_just_pressed("start_round"):
 		set_state(GameState.PLAYING)
 	if Input.is_action_just_pressed("reset_round"):
-		set_state(GameState.READY)
+		set_state(GameState.RESTART)
 
 func set_state(new_state: GameState) -> void:
 	state = new_state
 	match state:
 		GameState.READY:
-			ball.reset_to(get_viewport_rect().size/2)
+			var ball_y = [0, get_viewport_rect().size.y].pick_random()
+			ball.reset_to(Vector2(get_viewport_rect().size.x/2, ball_y))
 			ball.stop()
 		GameState.PLAYING:
 			ball.start()
 		GameState.POINT_SCORED:
-			ball.stop()
 			await get_tree().create_timer(1.0).timeout
+			set_state(GameState.READY)
+		GameState.RESTART:
+			left_score = 0
+			right_score = 0
+			score_hud.set_score(left_score, right_score)
 			set_state(GameState.READY)
