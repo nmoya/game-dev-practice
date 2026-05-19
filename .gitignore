@@ -157,8 +157,8 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
+# Static site source is tracked; exported game builds are generated.
+/site/games/
 
 # mypy
 .mypy_cache/
