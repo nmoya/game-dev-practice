@@ -8,6 +8,7 @@ extends Node2D
 @export var left_goal: Area2D
 @export var right_goal: Area2D
 @export var score_hud: ScoreHUD
+@export var help_hud: MarginContainer
 @export var paddle_speed_ratio: float = 1.4
 
 var left_score: int = 0
@@ -67,8 +68,10 @@ func set_state(new_state: GameState) -> void:
 			var ball_y = [0, get_viewport_rect().size.y].pick_random()
 			ball.reset_to(Vector2(get_viewport_rect().size.x/2, ball_y))
 			ball.stop()
+			help_hud.show()
 		GameState.PLAYING:
 			ball.start()
+			help_hud.hide()
 		GameState.POINT_SCORED:
 			await get_tree().create_timer(1.0).timeout
 			set_state(GameState.READY)

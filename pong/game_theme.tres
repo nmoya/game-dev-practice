@@ -1,4 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://duy0loejmlhrv"]
 
 [resource]
+HeaderMedium/base_type = &"Label"
+HeaderMedium/font_sizes/font_size = 32
 Label/font_sizes/font_size = 132

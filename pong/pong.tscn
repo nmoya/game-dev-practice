@@ -15,7 +15,7 @@ size = Vector3(20, 20, 1)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m5tya"]
 size = Vector2(10, 1080)
 
-[node name="Pong" type="Node2D" unique_id=1439645104 node_paths=PackedStringArray("left_paddle", "right_paddle", "ball", "divider_line", "lower_wall", "left_goal", "right_goal", "score_hud")]
+[node name="Pong" type="Node2D" unique_id=1439645104 node_paths=PackedStringArray("left_paddle", "right_paddle", "ball", "divider_line", "lower_wall", "left_goal", "right_goal", "score_hud", "help_hud")]
 script = ExtResource("1_m5tya")
 left_paddle = NodePath("LeftPaddle")
 right_paddle = NodePath("RightPaddle")
@@ -25,6 +25,7 @@ lower_wall = NodePath("Boundaries/LowerWall")
 left_goal = NodePath("LeftGoal")
 right_goal = NodePath("RightGoal")
 score_hud = NodePath("UIRoot/ScoreHUD")
+help_hud = NodePath("UIRoot/HelpHUD")
 
 [node name="LeftPaddle" parent="." unique_id=286122963 instance=ExtResource("1_8w31r")]
 position = Vector2(63, 501)
@@ -101,3 +102,67 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 text = "0"
+
+[node name="HelpHUD" type="MarginContainer" parent="UIRoot" unique_id=27455772]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -124.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_constants/margin_bottom = 48
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIRoot/HelpHUD" unique_id=1880593569]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIRoot/HelpHUD/VBoxContainer" unique_id=358372567]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer" unique_id=1667084748]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="Help1" type="Label" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer" unique_id=1327697351]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderMedium"
+text = "W / S: Move left paddle"
+
+[node name="Control2" type="Control" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer" unique_id=2126041990]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Help2" type="Label" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer" unique_id=94557592]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderMedium"
+text = "O / L: Move left paddle"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UIRoot/HelpHUD/VBoxContainer" unique_id=1405571454]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer2" unique_id=1466008766]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="Help1" type="Label" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer2" unique_id=1343089965]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderMedium"
+text = "Spacebar: Start round"
+
+[node name="Control2" type="Control" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer2" unique_id=1216420826]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Help2" type="Label" parent="UIRoot/HelpHUD/VBoxContainer/HBoxContainer2" unique_id=1002058867]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderMedium"
+text = "R: Restart match"
