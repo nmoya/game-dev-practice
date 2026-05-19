@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://cbrve2j7ssaiq"]
+
+[ext_resource type="PackedScene" uid="uid://cv6r2wbfv4e8f" path="res://paddle.tscn" id="1_8w31r"]
+[ext_resource type="Script" uid="uid://b37eg3p5dq5xa" path="res://pong.gd" id="1_m5tya"]
+[ext_resource type="Script" uid="uid://cr54hg1hwpknt" path="res://ball.gd" id="2_4opyw"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pkvn5"]
+radius = 35.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_m5tya"]
+radius = 35.0
+height = 70.0
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_4opyw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m5tya"]
+size = Vector2(10, 1080)
+
+[node name="Pong" type="Node2D" unique_id=1439645104 node_paths=PackedStringArray("left_paddle", "right_paddle", "ball", "divider_line", "lower_wall", "left_goal", "right_goal")]
+script = ExtResource("1_m5tya")
+left_paddle = NodePath("LeftPaddle")
+right_paddle = NodePath("RightPaddle")
+ball = NodePath("Ball")
+divider_line = NodePath("DividerLine")
+lower_wall = NodePath("Boundaries/LowerWall")
+left_goal = NodePath("LeftGoal")
+right_goal = NodePath("RightGoal")
+
+[node name="LeftPaddle" parent="." unique_id=286122963 instance=ExtResource("1_8w31r")]
+position = Vector2(63, 501)
+
+[node name="RightPaddle" parent="." unique_id=534355120 instance=ExtResource("1_8w31r")]
+position = Vector2(1818, 521)
+player = "PlayerTwo"
+
+[node name="Ball" type="CharacterBody2D" parent="." unique_id=1509319206]
+collision_mask = 6
+script = ExtResource("2_4opyw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball" unique_id=716590435]
+shape = SubResource("CircleShape2D_pkvn5")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Ball" unique_id=1262370282]
+mesh = SubResource("SphereMesh_m5tya")
+
+[node name="Boundaries" type="StaticBody2D" parent="." unique_id=1361099202]
+collision_layer = 4
+
+[node name="UpperWall" type="CollisionShape2D" parent="Boundaries" unique_id=778866182]
+rotation = 3.1415927
+shape = SubResource("WorldBoundaryShape2D_4opyw")
+
+[node name="LowerWall" type="CollisionShape2D" parent="Boundaries" unique_id=803180724]
+position = Vector2(0, 1080)
+shape = SubResource("WorldBoundaryShape2D_4opyw")
+
+[node name="LeftGoal" type="Area2D" parent="." unique_id=1042020068]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftGoal" unique_id=1780151179]
+shape = SubResource("RectangleShape2D_m5tya")
+
+[node name="RightGoal" type="Area2D" parent="." unique_id=283661339]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightGoal" unique_id=608276866]
+shape = SubResource("RectangleShape2D_m5tya")
+
+[node name="DividerLine" type="Line2D" parent="." unique_id=671363171]
+points = PackedVector2Array(0, 0, 0, 1080)
