@@ -43,10 +43,10 @@ shape = SubResource("WorldBoundaryShape2D_1ss1h")
 [node name="Paddle" parent="." unique_id=184050691 instance=ExtResource("3_ku2j4")]
 
 [node name="Pit" type="Area2D" parent="." unique_id=691925341]
+position = Vector2(960, 1050)
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pit" unique_id=347746837]
-position = Vector2(960, 1050)
 shape = SubResource("RectangleShape2D_ku2j4")
 
 [node name="UIRoot" type="CanvasLayer" parent="." unique_id=1778916151]

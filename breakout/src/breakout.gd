@@ -41,6 +41,9 @@ func update_layout(viewport_size: Vector2) -> void:
 	var custom_y = viewport_size.y - viewport_size.y * 0.1 
 	right_wall.position = Vector2(viewport_size.x, 0)
 	paddle.position = Vector2(center.x, custom_y)
+	pit.position = Vector2(center.x, viewport_size.y)
+	var pit_shape := pit.get_node("CollisionShape2D").shape as RectangleShape2D
+	pit_shape.size = Vector2(viewport_size.x, 50)
 	ball.reset(Vector2(center.x, custom_y - 50))
 
 func get_lives() -> int:
