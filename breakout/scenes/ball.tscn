@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cxvgn5jfhfjca"]
+
+[ext_resource type="Script" uid="uid://dnn2ccskoshs2" path="res://src/ball.gd" id="1_7s4qf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n1dj2"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_n1dj2"]
+size = Vector2(20, 20)
+
+[node name="Ball" type="CharacterBody2D" unique_id=474133762]
+position = Vector2(431, 233)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_7s4qf")
+current_speed = 1200
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1764579103]
+shape = SubResource("RectangleShape2D_n1dj2")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=1538014964]
+mesh = SubResource("QuadMesh_n1dj2")

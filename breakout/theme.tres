@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://ctugekwbuqk14"]
+
+[ext_resource type="FontFile" uid="uid://blusukf6ea3j2" path="res://font/Doto-VariableFont_ROND,wght.ttf" id="1_e1x85"]
+
+[resource]
+Label/font_sizes/font_size = 48
+Label/fonts/font = ExtResource("1_e1x85")

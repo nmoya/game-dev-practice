@@ -16,9 +16,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build site
+  discover:
+    name: Discover games
     runs-on: ubuntu-latest
+
+    outputs:
+      games: ${{ steps.games.outputs.games }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find Godot projects
+        id: games
+        run: |
+          games=$(find . -mindepth 2 -maxdepth 2 -name project.godot -printf '%h\n' | sed 's#^./##' | sort | jq -R -s -c 'split("\n")[:-1]')
+          echo "games=$games" >> "$GITHUB_OUTPUT"
+
+  build-games:
+    name: Build ${{ matrix.game }}
+    needs: discover
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        game: ${{ fromJson(needs.discover.outputs.games) }}
 
     env:
       GODOT_VERSION: 4.6.0
@@ -27,23 +50,97 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore exported game
+        id: game-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/${{ matrix.game }}
+          key: pages-game-${{ matrix.game }}-${{ hashFiles(format('{0}/**', matrix.game)) }}
+
       - name: Setup Godot
+        if: steps.game-cache.outputs.cache-hit != 'true'
         uses: chickensoft-games/setup-godot@v2
         with:
           version: ${{ env.GODOT_VERSION }}
           use-dotnet: false
           include-templates: true
 
+      - name: Import project
+        if: steps.game-cache.outputs.cache-hit != 'true'
+        run: godot --headless --path "${{ matrix.game }}" --import --quit
+
+      - name: Export web build
+        if: steps.game-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "build/${{ matrix.game }}"
+          godot --headless --path "${{ matrix.game }}" --export-release Web "$GITHUB_WORKSPACE/build/${{ matrix.game }}/index.html"
+
+      - name: Cache exported game
+        if: steps.game-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: build/${{ matrix.game }}
+          key: pages-game-${{ matrix.game }}-${{ hashFiles(format('{0}/**', matrix.game)) }}
+
+      - name: Upload game artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-${{ matrix.game }}
+          path: build/${{ matrix.game }}
+          if-no-files-found: error
+
+  build-site:
+    name: Build site
+    needs:
+      - discover
+      - build-games
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download game artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: game-*
+          path: downloaded-games
+
       - name: Prepare Pages folder
         run: |
-          mkdir -p public/games/pong
+          mkdir -p public/games
           cp -R site/. public/
+          for artifact in downloaded-games/game-*; do
+            game="${artifact##*/game-}"
+            mkdir -p "public/games/$game"
+            cp -R "$artifact/." "public/games/$game/"
+          done
 
-      - name: Import Pong project
-        run: godot --headless --path pong --import --quit
+          python3 <<'PY'
+          from html import escape
+          from pathlib import Path
 
-      - name: Export Pong web build
-        run: godot --headless --path pong --export-release WebExport "$GITHUB_WORKSPACE/public/games/pong/index.html"
+          index_path = Path("public/index.html")
+          games = sorted(path.name for path in Path("public/games").iterdir() if path.is_dir())
+          cards = []
+
+          for game in games:
+              title = game.replace("-", " ").replace("_", " ").title()
+              cards.append(
+                  f'          <a class="game-card" href="games/{escape(game)}/">\n'
+                  f'            <span class="game-title">{escape(title)}</span>\n'
+                  f'            <span class="game-description">Godot web build</span>\n'
+                  f'          </a>'
+              )
+
+          html = index_path.read_text()
+          start = "          <!-- games:start -->"
+          end = "          <!-- games:end -->"
+          before, rest = html.split(start, 1)
+          _, after = rest.split(end, 1)
+          replacement = start + "\n" + "\n".join(cards) + "\n" + end
+          index_path.write_text(before + replacement + after)
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -52,7 +149,7 @@ jobs:
 
   deploy:
     name: Deploy site
-    needs: build
+    needs: build-site
     runs-on: ubuntu-latest
     environment:
       name: github-pages

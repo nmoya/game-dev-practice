@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://ccfio5ekrcqnk"]
+
+[ext_resource type="Script" uid="uid://bort2qhneb1p7" path="res://src/breakout.gd" id="1_o6xyp"]
+[ext_resource type="PackedScene" uid="uid://cxvgn5jfhfjca" path="res://scenes/ball.tscn" id="2_1ss1h"]
+[ext_resource type="PackedScene" uid="uid://c2dxa717igktg" path="res://scenes/paddle.tscn" id="3_ku2j4"]
+[ext_resource type="Script" uid="uid://cms8xny8jccl2" path="res://src/score_hud.gd" id="4_hwbe1"]
+[ext_resource type="AudioStream" uid="uid://bk3rr56mmaju0" path="res://menu_blip.wav" id="6_elcrc"]
+[ext_resource type="Script" uid="uid://bfi0d2gkv6tar" path="res://src/brick_wall.gd" id="6_yabyl"]
+[ext_resource type="Script" uid="uid://bfx4d05aklhes" path="res://src/brick_destroyed_sound.gd" id="7_elcrc"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_1ss1h"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ku2j4"]
+size = Vector2(1920, 50)
+
+[node name="Breakout" type="Node2D" unique_id=2053263319 node_paths=PackedStringArray("ball", "right_wall", "paddle", "pit", "score_hud", "brick_wall")]
+script = ExtResource("1_o6xyp")
+ball = NodePath("Ball")
+right_wall = NodePath("WorldBoundaries/Right")
+paddle = NodePath("Paddle")
+pit = NodePath("Pit")
+score_hud = NodePath("UIRoot/ScoreHUD")
+brick_wall = NodePath("BrickWall")
+
+[node name="Ball" parent="." unique_id=474133762 instance=ExtResource("2_1ss1h")]
+collision_mask = 13
+
+[node name="WorldBoundaries" type="StaticBody2D" parent="." unique_id=437311365]
+collision_mask = 3
+
+[node name="Left" type="CollisionShape2D" parent="WorldBoundaries" unique_id=1847527847]
+rotation = 1.5707964
+shape = SubResource("WorldBoundaryShape2D_1ss1h")
+
+[node name="Right" type="CollisionShape2D" parent="WorldBoundaries" unique_id=1354887734]
+rotation = -1.5707964
+shape = SubResource("WorldBoundaryShape2D_1ss1h")
+
+[node name="Top" type="CollisionShape2D" parent="WorldBoundaries" unique_id=1811605049]
+rotation = 3.1415927
+shape = SubResource("WorldBoundaryShape2D_1ss1h")
+
+[node name="Paddle" parent="." unique_id=184050691 instance=ExtResource("3_ku2j4")]
+
+[node name="Pit" type="Area2D" parent="." unique_id=691925341]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pit" unique_id=347746837]
+position = Vector2(960, 1050)
+shape = SubResource("RectangleShape2D_ku2j4")
+
+[node name="UIRoot" type="CanvasLayer" parent="." unique_id=1778916151]
+
+[node name="ScoreHUD" type="Control" parent="UIRoot" unique_id=100332150 node_paths=PackedStringArray("bricks_left", "balls_left")]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("4_hwbe1")
+bricks_left = NodePath("MarginContainer/HBoxContainer/BricksLeft")
+balls_left = NodePath("MarginContainer/HBoxContainer/BallsLeft")
+
+[node name="MarginContainer" type="MarginContainer" parent="UIRoot/ScoreHUD" unique_id=8593740]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 73.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIRoot/ScoreHUD/MarginContainer" unique_id=1506170901]
+layout_mode = 2
+
+[node name="BricksLeft" type="Label" parent="UIRoot/ScoreHUD/MarginContainer/HBoxContainer" unique_id=1139454645]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "100"
+
+[node name="BallsLeft" type="Label" parent="UIRoot/ScoreHUD/MarginContainer/HBoxContainer" unique_id=80181764]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "3"
+horizontal_alignment = 2
+
+[node name="BrickWall" type="Node2D" parent="." unique_id=530801997]
+script = ExtResource("6_yabyl")
+
+[node name="BrickDestroyedSound" type="AudioStreamPlayer" parent="." unique_id=477894610]
+stream = ExtResource("6_elcrc")
+script = ExtResource("7_elcrc")
+
+[connection signal="brick_destroyed" from="Ball" to="." method="_on_ball_brick_destroyed"]
+[connection signal="brick_destroyed" from="Ball" to="BrickDestroyedSound" method="_on_ball_brick_destroyed"]
