@@ -129,7 +129,6 @@ jobs:
               cards.append(
                   f'          <a class="game-card" href="games/{escape(game)}/">\n'
                   f'            <span class="game-title">{escape(title)}</span>\n'
-                  f'            <span class="game-description">Godot web build</span>\n'
                   f'          </a>'
               )
 
